@@ -1,0 +1,62 @@
+{
+  "schema_version": "reported-v1",
+  "source": "Verified local terminal outputs supplied by project member, rounded coefficients; do not mix variant coefficients",
+  "ode_parameters": {
+    "A0": 0.809663,
+    "A_eq": 0.289778,
+    "k": 0.20279
+  },
+  "ode_equation": "A(t)=A_eq+(A0-A_eq)*exp(-k*t)",
+  "t_definition": "t=teaching_week-1",
+  "prediction_equation": "p=sigmoid(logit(A(t))+course_offset+weather_beta*Weather+afternoon_beta*Afternoon)",
+  "fit_training_weeks": [
+    1,
+    8
+  ],
+  "test_weeks": [
+    9,
+    10
+  ],
+  "target": "recorded card-tap attendance probability",
+  "class_time": {
+    "Afternoon": "1 if start hour >=12 else 0"
+  },
+  "variants": {
+    "ode_course": {
+      "course_log_odds_offsets": {
+        "Control 1": -0.2059,
+        "Data Structures and Algorithms": 0.2872,
+        "Introduction to Electronics": 0.4049,
+        "Mathematics for Robotics and Artificial Intelligence 2": -0.6465
+      },
+      "test_MAE": 0.1029,
+      "test_RMSE": 0.1278
+    },
+    "ode_course_weather": {
+      "weather_beta": -0.16601450780086943,
+      "course_offsets": "Not included in reported output for this exact variant; run exporter to obtain them",
+      "test_MAE": 0.0978,
+      "test_RMSE": 0.1228
+    },
+    "ode_course_weather_afternoon": {
+      "course_log_odds_offsets": {
+        "Control 1": -0.23189062039822209,
+        "Data Structures and Algorithms": 0.246891971306217,
+        "Introduction to Electronics": 0.3153947373249733,
+        "Mathematics for Robotics and Artificial Intelligence 2": -0.6829808940457509
+      },
+      "weather_beta": -0.14874071692874363,
+      "afternoon_beta": 0.11280244636822656,
+      "test_MAE": 0.1019,
+      "test_RMSE": 0.1266
+    }
+  },
+  "limitations": [
+    "Observed recorded taps not necessarily true physical attendance",
+    "Weather thresholds exploratory",
+    "Scenario change is associational not causal",
+    "Roundoff in reported coefficients; prefer running exporter on original local CSV"
+  ],
+  "weather_version": "adverse",
+  "weather_definition": "1 if matched rain > 1 mm OR wind speed > 20 km/h; cloud alone is normal"
+}

@@ -1,0 +1,62 @@
+{
+  "schema_version": "reported-v1",
+  "source": "Verified local terminal outputs supplied by project member, rounded coefficients; do not mix variant coefficients",
+  "ode_parameters": {
+    "A0": 0.809663,
+    "A_eq": 0.289778,
+    "k": 0.20279
+  },
+  "ode_equation": "A(t)=A_eq+(A0-A_eq)*exp(-k*t)",
+  "t_definition": "t=teaching_week-1",
+  "prediction_equation": "p=sigmoid(logit(A(t))+course_offset+weather_beta*Weather+afternoon_beta*Afternoon)",
+  "fit_training_weeks": [
+    1,
+    8
+  ],
+  "test_weeks": [
+    9,
+    10
+  ],
+  "target": "recorded card-tap attendance probability",
+  "class_time": {
+    "Afternoon": "1 if start hour >=12 else 0"
+  },
+  "variants": {
+    "ode_course": {
+      "course_log_odds_offsets": {
+        "Control 1": -0.2059,
+        "Data Structures and Algorithms": 0.2872,
+        "Introduction to Electronics": 0.4049,
+        "Mathematics for Robotics and Artificial Intelligence 2": -0.6465
+      },
+      "test_MAE": 0.1029,
+      "test_RMSE": 0.1278
+    },
+    "ode_course_weather": {
+      "weather_beta": 0.034471757406449734,
+      "course_offsets": "Not included in reported output for this exact variant; run exporter to obtain them",
+      "test_MAE": 0.1022,
+      "test_RMSE": 0.1273
+    },
+    "ode_course_weather_afternoon": {
+      "course_log_odds_offsets": {
+        "Control 1": -0.25319665071696684,
+        "Data Structures and Algorithms": 0.21842361633339255,
+        "Introduction to Electronics": 0.2762514288150039,
+        "Mathematics for Robotics and Artificial Intelligence 2": -0.7054552938396399
+      },
+      "weather_beta": 0.025511693401111788,
+      "afternoon_beta": 0.12400184049881992,
+      "test_MAE": 0.1064,
+      "test_RMSE": 0.1313
+    }
+  },
+  "limitations": [
+    "Observed recorded taps not necessarily true physical attendance",
+    "Weather thresholds exploratory",
+    "Scenario change is associational not causal",
+    "Roundoff in reported coefficients; prefer running exporter on original local CSV"
+  ],
+  "weather_version": "rain",
+  "weather_definition": "1 if matched hourly rain > 0 mm, otherwise 0"
+}

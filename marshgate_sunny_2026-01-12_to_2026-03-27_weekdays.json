@@ -1,0 +1,347 @@
+{
+  "metadata": {
+    "location": "Marshgate Building, UCL East, 7 Sidings Street, London E20 2AE",
+    "requested_coordinates": {
+      "latitude": 51.5376263,
+      "longitude": -0.0120081
+    },
+    "returned_grid_coordinates": {
+      "latitude": 51.564144,
+      "longitude": 0.0
+    },
+    "location_source_url": "https://www.ucl.ac.uk/engage/ucl-east/about-ucl-east/visit-us",
+    "start_date": "2026-01-12",
+    "end_date": "2026-03-27",
+    "date_range_inclusive": true,
+    "timezone": "Europe/London",
+    "utc_offset_for_entire_period": "+00:00",
+    "weekday_filter": "Monday to Friday; Saturdays and Sundays excluded",
+    "weekday_count": 55,
+    "times_local": [
+      "08:30",
+      "13:00"
+    ],
+    "variable": "is_sunny",
+    "value_meaning": {
+      "true": "Sunny: clear sky or mainly clear (WMO weather code 0 or 1)",
+      "false": "Not sunny under this definition (including partly cloudy, code 2)",
+      "null": "Unknown: the two hourly sunny classifications around 08:30 disagree"
+    },
+    "sunny_weather_codes": [
+      0,
+      1
+    ],
+    "methods": {
+      "08:30": "Estimate from surrounding hours: use their sunny classification only when 08:00 and 09:00 agree; otherwise null. Categorical weather codes are not numerically interpolated.",
+      "13:00": "Classify the source hourly weather_code at 13:00 directly."
+    },
+    "source": {
+      "provider": "Open-Meteo Historical Weather API",
+      "model": "ecmwf_ifs",
+      "spatial_resolution": "approximately 9 km",
+      "temporal_resolution": "hourly",
+      "documentation_url": "https://open-meteo.com/en/docs/historical-weather-api",
+      "api_url": "https://archive-api.open-meteo.com/v1/archive?latitude=51.5376263&longitude=-0.0120081&start_date=2026-01-12&end_date=2026-03-27&hourly=weather_code&models=ecmwf_ifs&timezone=GMT",
+      "retrieved_at_utc": "2026-11-18T18:15:54+00:00",
+      "raw_file": "marshgate_open_meteo_weather_code_hourly_raw.json",
+      "raw_sha256": "962d00b03690e3a82b6a2d86cf77bffd058033527f7e0c19956af2312303d917",
+      "hourly_evidence_file": "marshgate_sunny_hourly_evidence.json",
+      "attribution": "Weather data by Open-Meteo.com; ECMWF IFS model data.",
+      "data_license": "CC BY 4.0"
+    },
+    "limitations": [
+      "Historical gridded model estimates, not a weather-station observation at Marshgate.",
+      "Agreement at 08:00 and 09:00 does not guarantee unchanged weather at 08:30; all morning values are estimates.",
+      "Sunny describes the sky condition at the requested time, not an entire sunny day or direct sunlight on the building. Partly cloudy conditions can still have sunshine but are classified false here."
+    ]
+  },
+  "summary": {
+    "08:30": {
+      "sunny": 10,
+      "not_sunny": 42,
+      "uncertain": 3
+    },
+    "13:00": {
+      "sunny": 11,
+      "not_sunny": 44,
+      "uncertain": 0
+    }
+  },
+  "data": [
+    {
+      "date": "2026-01-12",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-01-13",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-01-14",
+      "08:30": true,
+      "13:00": true
+    },
+    {
+      "date": "2026-01-15",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-01-16",
+      "08:30": null,
+      "13:00": true
+    },
+    {
+      "date": "2026-01-19",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-01-20",
+      "08:30": false,
+      "13:00": true
+    },
+    {
+      "date": "2026-01-21",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-01-22",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-01-23",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-01-26",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-01-27",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-01-28",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-01-29",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-01-30",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-02-02",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-02-03",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-02-04",
+      "08:30": true,
+      "13:00": true
+    },
+    {
+      "date": "2026-02-05",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-02-06",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-02-09",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-02-10",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-02-11",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-02-12",
+      "08:30": true,
+      "13:00": false
+    },
+    {
+      "date": "2026-02-13",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-02-16",
+      "08:30": true,
+      "13:00": false
+    },
+    {
+      "date": "2026-02-17",
+      "08:30": null,
+      "13:00": false
+    },
+    {
+      "date": "2026-02-18",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-02-19",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-02-20",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-02-23",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-02-24",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-02-25",
+      "08:30": true,
+      "13:00": true
+    },
+    {
+      "date": "2026-02-26",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-02-27",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-03-02",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-03-03",
+      "08:30": true,
+      "13:00": false
+    },
+    {
+      "date": "2026-03-04",
+      "08:30": false,
+      "13:00": true
+    },
+    {
+      "date": "2026-03-05",
+      "08:30": true,
+      "13:00": true
+    },
+    {
+      "date": "2026-03-06",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-03-09",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-03-10",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-03-11",
+      "08:30": null,
+      "13:00": false
+    },
+    {
+      "date": "2026-03-12",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-03-13",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-03-16",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-03-17",
+      "08:30": false,
+      "13:00": true
+    },
+    {
+      "date": "2026-03-18",
+      "08:30": true,
+      "13:00": true
+    },
+    {
+      "date": "2026-03-19",
+      "08:30": true,
+      "13:00": true
+    },
+    {
+      "date": "2026-03-20",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-03-23",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-03-24",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-03-25",
+      "08:30": false,
+      "13:00": false
+    },
+    {
+      "date": "2026-03-26",
+      "08:30": true,
+      "13:00": true
+    },
+    {
+      "date": "2026-03-27",
+      "08:30": false,
+      "13:00": false
+    }
+  ]
+}
