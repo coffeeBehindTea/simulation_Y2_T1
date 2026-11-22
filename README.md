@@ -1,16 +1,94 @@
-# COMP0212 Course Attendance Modeling
+# Simulation_Y2_T1 Repository
 
-This project uses card-tap attendance records from four courses to compare a shared ordinary differential equation (ODE) baseline with models that account for course, time of day, sunny conditions, feels-like temperature, and the number of classes until the next exam.
+## Overview
+This repository contains the **Modelling and Simulation** project for COMP0212.  It implements a hybrid deterministic–stochastic model of student lecture attendance, fits a first‑order ODE baseline, adds categorical and weather covariates, runs Monte‑Carlo simulations with RFID sensor noise, and evaluates the model on a hold‑out set (Weeks 9‑10).
 
-**Technical retrospective** · [English](docs/attendance_factor_retrospective.en.md) · [Simplified Chinese](docs/attendance_factor_retrospective.zh-CN.md)
+## Directory Structure
+```
+simulation_Y2_T1/
+├─ data/                     # Cleaned CSVs used for modelling
+│   ├─ combined_courses.csv   # Feature matrix (10 columns)
+│   └─ …                     # Original raw CSVs (attendance & weather)
+├─ docs/                     # Technical documentation and retrospectives
+│   ├─ attendance_factor_retrospective.en.md
+│   └─ attendance_factor_retrospective.zh-CN.md
+├─ figures/                  # Publication‑quality PNGs and CSV tables
+│   ├─ stochastic_simulation_monte_carlo.png
+│   ├─ parameter_sensitivity_ode.png
+│   ├─ simulation_performance_summary.csv
+│   └─ (future figures – see *Additional Figures* section)
+├─ scripts/                  # All runnable Python scripts (new folder)
+│   ├─ stochastic_simulation_and_analysis.py
+│   ├─ plot_baseline_ode.py   # Generates a clean ODE baseline plot
+│   └─ …                     # Any helper scripts
+├─ team66.tex                # Complete LaTeX report (ready for Overleaf)
+├─ README.md                 # This file (updated)
+└─ .gitignore                # Ignored artefacts (e.g. __pycache__)
+```
 
-Both versions document the data cleaning rules, model equations, implementation, full results, and reproduction commands.
+## Data
+- **`RAI_attendance_with_weather.csv`** – cleaned attendance + matched weather.
+- **`combined_courses.csv`** – the feature matrix used by the modelling scripts (course one‑hots, weather, exam‑distance).
+- All CSVs are version‑controlled; raw source files are retained in the repository for reproducibility.
 
-## Completed Work
+## Scripts
+| Script | Purpose |
+|--------|---------|
+| `scripts/stochastic_simulation_and_analysis.py` | End‑to‑end Monte‑Carlo simulation, sensor‑noise modelling, hold‑out statistics, sensitivity plots. |
+| `scripts/plot_baseline_ode.py` | Generates a standalone plot of the fitted ODE baseline (Figure A). |
+| `compare_single_factors.py` | Single‑factor fitting & evaluation (already in repo). |
+| `compare_factor_pairs.py` | Two‑factor fitting & evaluation (already in repo). |
+| `sweep_exam_thresholds.py` | Exam‑cutoff sensitivity sweep (already in repo). |
 
-- **Data preparation.** Cleaned and retained 94 class sessions, matched weather at each session's start, and standardized the feature column names in English. [Combined feature table](data/combined_courses.csv)
-- **Shared baseline.** Fitted the ODE using 76 sessions from teaching Weeks 1–8 and evaluated it on 18 sessions from Weeks 9–10.
-- **Factor comparison.** Evaluated five single-factor models and all ten two-factor combinations on the same holdout. [Single-factor predictions](figures/single_factor_all_holdout_predictions.png) · [Two-factor predictions](figures/factor_pair_holdout_predictions.png) · [Model weights](figures/factor_model_weights.json)
-- **Exam cutoff sweep.** Used the shared exam schedule to test cutoffs from 1 to 10 classes, setting distances at or above each cutoff to zero. Compared results on the fixed holdout and in week-by-week testing. [Scores](figures/exam_threshold_scores.csv) · [Comparison chart](figures/exam_threshold_errors.png)
+All scripts can be executed from the project root, e.g.:
+```bash
+python -m pip install -r requirements.txt   # install numpy, pandas, scipy, matplotlib
+python scripts/stochastic_simulation_and_analysis.py
+python scripts/plot_baseline_ode.py
+```
 
-On the fixed holdout, **ODE + course** had the lowest mean absolute error (MAE) at 10.238 percentage points, compared with 13.016 for the pure baseline. The best pair, course + feels-like temperature, reached 10.264. In the exam cutoff sweep, the pure baseline had the lowest week-by-week MAE.
+## Results (figures already in `figures/`)
+- **Monte‑Carlo attendance simulation** – `stochastic_simulation_monte_carlo.png`
+- **Parameter sensitivity** – `parameter_sensitivity_ode.png`
+- **Hold‑out performance summary** – `simulation_performance_summary.csv`
+
+## Additional Figures (recommended for the report)
+| Figure | Suggested filename | Description |
+|--------|-------------------|-------------|
+| **Figure A – ODE baseline** | `baseline_ode.png` | Plot of the fitted ODE solution $A(t)$ (Equation \ref{eq:ode_solution}) over the full 10‑week term, with training (Weeks 1‑8) and hold‑out (Weeks 9‑10) shading. |
+| **Figure B – Factor weight bar chart** | `factor_weights.png` | Horizontal bar plot of the learned weights for the four course one‑hots and the two weather factors (sunny, temperature). |
+| **Figure C – Exam‑cutoff heatmap** | `exam_cutoff_heatmap.png` | Heat‑map of MAE / RMSE for each exam‑cutoff $n=1\dots10$ (Table 3) to give a visual overview of the sensitivity sweep. |
+| **Figure D – Residuals vs. prediction** | `residuals_scatter.png` | Scatter of observed attendance rate vs. predicted probability for the ODE + Course model (including 95 % CI). |
+
+The LaTeX report already contains placeholders (`Insert system diagram here`, `Insert simulation result plot here`). Replace those placeholders with the PNG files listed above.
+
+## How to Run the Project
+1. **Clone the repo** (already done).
+2. **Create a virtual environment** and install dependencies:
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate   # or .\.venv\Scripts\activate on Windows
+   pip install -r requirements.txt
+   ```
+3. **Execute the main analysis**:
+   ```bash
+   python scripts/stochastic_simulation_and_analysis.py
+   ```
+   This will (re)generate `figures/*.png` and `figures/simulation_performance_summary.csv`.
+4. **Generate the ODE baseline figure** (optional, for the report):
+   ```bash
+   python scripts/plot_baseline_ode.py
+   ```
+   The output `baseline_ode.png` will be saved under `figures/`.
+5. **Open `team66.tex` in Overleaf**, upload the PNG files from `figures/`, and compile.
+
+## Contributing
+- **Branch‑per‑feature**: create a new branch for any additional analysis or figure.
+- **Commit messages** should follow the conventional‑commit style already used (e.g. `feat: add baseline ODE plot`).
+- **Pull‑request**: open a PR against `main` and request a review from the team.
+
+## License
+This project is released under the MIT License – you are free to use, modify, and distribute the code for academic purposes.
+
+---
+*Last updated: 2026‑11‑22*
