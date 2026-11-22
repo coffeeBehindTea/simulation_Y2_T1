@@ -18,9 +18,9 @@
   "holdout_sessions": 18,
   "baseline": {
     "equation": "A(t) = A_eq + (A0 - A_eq) * exp(-k*t), t = teaching_week - 1",
-    "A0": 0.8088429187147077,
-    "A_eq": 0.28295956598403665,
-    "k": 0.1967289080518235
+    "A0": 0.8088429186452044,
+    "A_eq": 0.2829595645656958,
+    "k": 0.19672890708097573
   },
   "prediction": "sigmoid(logit(clamp(A(t), 0.000001, 0.999999)) + sum of factor adjustments)",
   "factor_definitions": {
@@ -61,144 +61,144 @@
   "single_factor_weights": {
     "Course": {
       "Course": {
-        "COMP0206": -0.7445129656010308,
-        "COMP0207": 0.4011443875434529,
-        "COMP0208": -0.2094708864827678,
-        "COMP0209": 0.2834455003851002
+        "COMP0206": -0.7445129657613503,
+        "COMP0207": 0.4011443873847998,
+        "COMP0208": -0.2094708866699035,
+        "COMP0209": 0.2834455002204577
       }
     },
     "Time of day": {
       "Time of day": {
-        "morning": -0.24746535493741773,
-        "afternoon": 0.18029834368947784
+        "morning": -0.2474653649820943,
+        "afternoon": 0.18029836447812064
       }
     },
     "Sunny": {
       "Sunny": {
-        "not_sunny": -0.04315865784215884,
-        "sunny": 0.15877385529254046
+        "not_sunny": -0.04315865198583229,
+        "sunny": 0.1587738410765004
       }
     },
     "Feels-like temperature": {
       "Feels-like temperature": {
-        "offset_at_training_mean": -0.00590927660289632,
-        "per_degree_c": 0.027769200183143664
+        "offset_at_training_mean": -0.005909276782615849,
+        "per_degree_c": 0.027769200248624726
       }
     },
     "Exam distance": {
       "Exam distance": {
-        "offset_at_training_mean": 0.11321808286928896,
-        "per_remaining_class": 0.1551805640699206
+        "offset_at_training_mean": 0.1132180825420774,
+        "per_remaining_class": 0.15518056407958514
       }
     }
   },
   "two_factor_weights": {
     "Course + Time of day": {
       "Course": {
-        "COMP0206": -0.7683327685864756,
-        "COMP0207": 0.3301714503163321,
-        "COMP0208": -0.2331080854048833,
-        "COMP0209": 0.2481058072624533
+        "COMP0206": -0.7683327687567932,
+        "COMP0207": 0.3301714501274249,
+        "COMP0208": -0.23310808560207183,
+        "COMP0209": 0.2481058070828061
       },
       "Time of day": {
         "morning": 0.0,
-        "afternoon": 0.0709729402040013
+        "afternoon": 0.07097294023425729
       }
     },
     "Course + Sunny": {
       "Course": {
-        "COMP0206": -0.7581895729161339,
-        "COMP0207": 0.3872436707627195,
-        "COMP0208": -0.2115617993254295,
-        "COMP0209": 0.2639453237153018
+        "COMP0206": -0.7581895731320233,
+        "COMP0207": 0.3872436705489203,
+        "COMP0208": -0.21156179952048673,
+        "COMP0209": 0.26394532347416516
       },
       "Sunny": {
         "not_sunny": 0.0,
-        "sunny": 0.0530233769417125
+        "sunny": 0.05302337714881226
       }
     },
     "Course + Feels-like temperature": {
       "Course": {
-        "COMP0206": -0.7416651731453071,
-        "COMP0207": 0.3986985947219761,
-        "COMP0208": -0.20918176836046998,
-        "COMP0209": 0.28272215349881274
+        "COMP0206": -0.7416651732145213,
+        "COMP0207": 0.39869859448450606,
+        "COMP0208": -0.20918176853839934,
+        "COMP0209": 0.2827221533109581
       },
       "Feels-like temperature": {
         "offset_at_training_mean": 0.0,
-        "per_degree_c": 0.0022660059883564
+        "per_degree_c": 0.002266006061199385
       }
     },
     "Course + Exam distance": {
       "Course": {
-        "COMP0206": -0.682124432938427,
-        "COMP0207": 0.38579438430357715,
-        "COMP0208": -0.28399900586345717,
-        "COMP0209": 0.29319282839290495
+        "COMP0206": -0.6821244330311595,
+        "COMP0207": 0.3857943842452191,
+        "COMP0208": -0.28399900599060174,
+        "COMP0209": 0.2931928283305584
       },
       "Exam distance": {
-        "offset_at_training_mean": 0.053409295187628616,
-        "per_remaining_class": 0.15384942207119626
+        "offset_at_training_mean": 0.05340929494228048,
+        "per_remaining_class": 0.15384942208681213
       }
     },
     "Time of day + Sunny": {
       "Time of day": {
-        "morning": -0.28987737428526955,
-        "afternoon": 0.13966025182117775
+        "morning": -0.2898773745113853,
+        "afternoon": 0.13966025162576837
       },
       "Sunny": {
         "not_sunny": 0.0,
-        "sunny": 0.20521035901625742
+        "sunny": 0.20521035919129332
       }
     },
     "Time of day + Feels-like temperature": {
       "Time of day": {
-        "morning": -0.23602948332907284,
-        "afternoon": 0.16895242805544494
+        "morning": -0.2360294834635433,
+        "afternoon": 0.1689524278422445
       },
       "Feels-like temperature": {
         "offset_at_training_mean": 0.0,
-        "per_degree_c": 0.014441054062004821
+        "per_degree_c": 0.014441054129841301
       }
     },
     "Time of day + Exam distance": {
       "Time of day": {
-        "morning": -0.27596482794356425,
-        "afternoon": 0.11995543249180671
+        "morning": -0.27596482806020095,
+        "afternoon": 0.11995543242149866
       },
       "Exam distance": {
-        "offset_at_training_mean": 0.14320932903240854,
-        "per_remaining_class": 0.1397018346958618
+        "offset_at_training_mean": 0.14320932879304343,
+        "per_remaining_class": 0.13970183470371134
       }
     },
     "Sunny + Feels-like temperature": {
       "Sunny": {
-        "not_sunny": -0.03949454214714977,
-        "sunny": 0.1296138956907223
+        "not_sunny": -0.03949454234839334,
+        "sunny": 0.12961389558936073
       },
       "Feels-like temperature": {
         "offset_at_training_mean": 0.0,
-        "per_degree_c": 0.02477486538044628
+        "per_degree_c": 0.024774865445249764
       }
     },
     "Sunny + Exam distance": {
       "Sunny": {
-        "not_sunny": -0.13231112979345216,
-        "sunny": 0.17709467275603405
+        "not_sunny": -0.13231112992351732,
+        "sunny": 0.1770946727766893
       },
       "Exam distance": {
-        "offset_at_training_mean": 0.2072511179191231,
-        "per_remaining_class": 0.17691525521887705
+        "offset_at_training_mean": 0.20725111770401808,
+        "per_remaining_class": 0.17691525523855037
       }
     },
     "Feels-like temperature + Exam distance": {
       "Feels-like temperature": {
-        "offset_at_training_mean": -0.0568439597418011,
-        "per_degree_c": 0.02551707273003941
+        "offset_at_training_mean": -0.05684395982744723,
+        "per_degree_c": 0.02551707279823335
       },
       "Exam distance": {
-        "offset_at_training_mean": 0.15636922635542663,
-        "per_remaining_class": 0.15322198060955627
+        "offset_at_training_mean": 0.1563692260742968,
+        "per_remaining_class": 0.1532219806121816
       }
     }
   }

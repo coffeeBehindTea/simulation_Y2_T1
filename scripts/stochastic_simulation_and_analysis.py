@@ -29,7 +29,7 @@ from compare_single_factors import load_sessions, fit_baseline
 SEED = 42
 RNG = np.random.default_rng(SEED)
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parents[1]
 WEIGHTS_PATH = ROOT / "figures" / "factor_model_weights.json"
 FIGURES_DIR = ROOT / "figures"
 

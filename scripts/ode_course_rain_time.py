@@ -19,9 +19,9 @@ from scipy.optimize import curve_fit, minimize
 from scipy.special import expit, logit
 
 # Resolve the input file and this variant's results folder relative to the script.
-HERE = Path(__file__).resolve().parent
-INPUT_CSV = HERE / "RAI_attendance_with_weather.csv"
-OUTPUT_DIR = HERE / "ODE_Rain_Results"
+ROOT = Path(__file__).resolve().parents[1]
+INPUT_CSV = ROOT / "data" / "RAI_attendance_with_weather.csv"
+OUTPUT_DIR = ROOT / "figures" / "ODE_Rain_Results"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 # The mode selects the threshold rule. The display name is used in reports.
 WEATHER_MODE = "rain"

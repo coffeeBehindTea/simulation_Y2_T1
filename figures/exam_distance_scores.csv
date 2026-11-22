@@ -1,13 +1,13 @@
 scope,sessions,model,MAE_pp,RMSE_pp
-Weeks 9–10: all sessions,18,Baseline,13.01556474,15.45206195
-Weeks 9–10: all sessions,18,Baseline + Exam distance,14.89251686,17.53108531
-Weeks 9–10: all sessions,18,Baseline + Constant offset,13.82543679,15.81291681
-Weeks 9–10: 1–6 sessions before an exam,12,Baseline,12.99086883,15.07015251
-Weeks 9–10: 1–6 sessions before an exam,12,Baseline + Exam distance,15.80629701,18.16503777
-Weeks 9–10: 1–6 sessions before an exam,12,Baseline + Constant offset,14.20567691,15.62154526
+Weeks 9–10: all sessions,18,Baseline,13.01556473,15.45206194
+Weeks 9–10: all sessions,18,Baseline + Exam distance,14.89251684,17.53108530
+Weeks 9–10: all sessions,18,Baseline + Constant offset,13.82543677,15.81291680
+Weeks 9–10: 1–6 sessions before an exam,12,Baseline,12.99086882,15.07015251
+Weeks 9–10: 1–6 sessions before an exam,12,Baseline + Exam distance,15.80629699,18.16503776
+Weeks 9–10: 1–6 sessions before an exam,12,Baseline + Constant offset,14.20567688,15.62154525
 Rolling Weeks 5–10: all sessions,55,Baseline,12.42984368,15.67643623
 Rolling Weeks 5–10: all sessions,55,Baseline + Exam distance,12.86595121,15.87986197
-Rolling Weeks 5–10: all sessions,55,Baseline + Constant offset,12.76246238,15.90535135
-Rolling Weeks 5–10: 1–6 sessions before an exam,28,Baseline,12.84113426,16.01021184
-Rolling Weeks 5–10: 1–6 sessions before an exam,28,Baseline + Exam distance,13.69777405,16.39927885
-Rolling Weeks 5–10: 1–6 sessions before an exam,28,Baseline + Constant offset,13.49449242,16.44772879
+Rolling Weeks 5–10: all sessions,55,Baseline + Constant offset,12.76246242,15.90535139
+Rolling Weeks 5–10: 1–6 sessions before an exam,28,Baseline,12.84113427,16.01021185
+Rolling Weeks 5–10: 1–6 sessions before an exam,28,Baseline + Exam distance,13.69777406,16.39927886
+Rolling Weeks 5–10: 1–6 sessions before an exam,28,Baseline + Constant offset,13.49449252,16.44772888

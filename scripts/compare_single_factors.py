@@ -15,7 +15,7 @@ from scipy.special import expit, logit
 
 
 # Resolve inputs and outputs relative to the project, regardless of the working directory.
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parents[1]
 # Preserve the course order in both the one-hot matrix and the exported weights.
 COURSES = ["COMP0206", "COMP0207", "COMP0208", "COMP0209"]
 # Common CSV fields shared by the single-factor, exam-distance, and pair models.
@@ -29,7 +29,7 @@ def load_sessions():
     """Read the cleaned attendance source and return validated sessions in time order."""
     # The feature export has no unique session key. Build the features beside
     # the outcomes in the source, then reconcile them with the feature export.
-    sessions = pd.read_csv(ROOT / "RAI_attendance_with_weather.csv")
+    sessions = pd.read_csv(ROOT / "data" / "RAI_attendance_with_weather.csv")
     # These fields identify each session and provide its outcome and matched weather.
     required = ["Class Id", "Course", "Date String", "Start Time", "weather_datetime",
                 "Teaching Week Number", "Attended", "Total", "weather_code",
