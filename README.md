@@ -95,6 +95,3 @@ python scripts/ode_course_rain_time.py
 ```
 
 All plots and CSV metric summaries will be generated and saved to `figures/`.
-
-## License
-MIT License.
