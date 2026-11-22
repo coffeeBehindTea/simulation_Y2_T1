@@ -37,9 +37,9 @@
 
 原始降雨和恶劣天气脚本均先拟合相同的 ODE。令 t 为教学周编号减 1。对前八周，按周汇总出勤人次和应到人次，得到八个比例，再以有界非线性最小二乘拟合 A₀、Aeq 和 k。
 
-$$
+```math
 \frac{dA}{dt}=-k(A-A_{\mathrm{eq}}),\qquad A(t)=A_{\mathrm{eq}}+(A_0-A_{\mathrm{eq}})e^{-kt}
-$$
+```
 
 移除两条考试重叠记录后，训练课次由 78 减为 76。采用原方法重估得到 A₀ = 0.808843、Aeq = 0.282960、k = 0.196729。所有固定划分的模型共用这条曲线。
 
@@ -47,31 +47,33 @@ $$
 
 对课次 i，以 A(tᵢ) 的对数几率为固定偏置。S 为选定的因素集合，gⱼ 为一个因素的修正。用训练集逐节出勤人数 aᵢ 和应到人数 Nᵢ 拟合修正项，最小化二项负对数似然。代码对转换 logit 前的基线概率限制到 [10⁻⁶, 1−10⁻⁶]。
 
-$$
-\eta_i=\operatorname{logit}(A(t_i))+\sum_{j\in S}g_j(x_{ij}),\qquad p_i=\frac{1}{1+e^{-\eta_i}}
-$$
+```math
+\eta_i=\mathrm{logit}(A(t_i))+\sum_{j\in S}g_j(x_{ij}),\qquad p_i=\frac{1}{1+e^{-\eta_i}}
+```
 
-$$
+```math
 \mathcal L=\sum_{i\in\mathrm{train}}\bigl[N_i\log(1+e^{\eta_i})-a_i\eta_i\bigr]
-$$
+```
 
 科目项为 βᵀCᵢ，其中 Cᵢ 为四维 one-hot 向量。时段和晴天分别为两类常数修正。体感温度使用训练均值 6.7145 °C 居中的线性修正。双因素模型把两项修正相加并重新联合估计权重。若两个因素都包含常数，第二项采用零参考系数，公共常数由第一项表示。
 
 ### 全科目考试倒数
 
-DSA 考试日期为 1 月 29 日、2 月 12 日、3 月 5 日、3 月 19 日。Math 2 为 1 月 30 日、2 月 13 日、3 月 6 日、3 月 27 日。全部按当天 12:00 排序。每节课从当前课次起，计算到下一场任意科目考试前的保留课次数，最后一节为 1。下式中，$d$ 为截断前的剩余课数。阈值 $n$ 只保留 $1\le d<n$ 的倒数，$d\ge n$ 时特征和修正均为 0。
+DSA 考试日期为 1 月 29 日、2 月 12 日、3 月 5 日、3 月 19 日。Math 2 为 1 月 30 日、2 月 13 日、3 月 6 日、3 月 27 日。全部按当天 12:00 排序。每节课从当前课次起，计算到下一场任意科目考试前的保留课次数，最后一节为 1。下式中，`d` 为截断前的剩余课数。阈值 `n` 只保留 1 ≤ d ≤ n−1 的倒数，d ≥ n 时特征和修正均为 0。
 
-$$
-g_{\mathrm{exam},n}(d)=\mathbf 1_{\{1\le d<n\}}\bigl[\alpha_n+\beta_n(d-\bar d_n)\bigr]
-$$
+```math
+g_{\mathrm{exam},n}(d)=I_n(d)\left[\alpha_n+\beta_n(d-\bar{d}_n)\right]
+```
 
-$\bar d_n$ 由该阈值下窗口内的训练课计算。主实验采用 $n=7$，全表有 36 节取 1–6，58 节取 0。考试单因素用窗口内 24 节训练课估计修正，$\bar d_7=3$。双因素模型在全部 76 节课上联合拟合，窗口外的考试项为 0，另一因素照常生效。
+其中，若 1 ≤ d ≤ n−1，则 Iₙ(d) 为 1，否则为 0。
 
-阈值扫描仅测试考试距离单因素。对每个 $n$ 和训练窗口分别重新估计修正，保留同一训练窗口对应的共享 ODE。$n=1$ 时没有课次启用考试修正，直接得到纯基线。$n=2$ 时窗口内只剩 $d=1$，仅估计常数修正，斜率为 0。
+d̄ₙ 由该阈值下窗口内的训练课计算。主实验采用 `n=7`，全表有 36 节取 1–6，58 节取 0。考试单因素用窗口内 24 节训练课估计修正，d̄₇ = 3。双因素模型在全部 76 节课上联合拟合，窗口外的考试项为 0，另一因素照常生效。
+
+阈值扫描仅测试考试距离单因素。对每个 `n` 和训练窗口分别重新估计修正，保留同一训练窗口对应的共享 ODE。`n=1` 时没有课次启用考试修正，直接得到纯基线。`n=2` 时窗口内只剩 `d=1`，仅估计常数修正，斜率为 0。
 
 ## 固定留出集结果
 
-表 1 和表 2 以同一批 18 节课为比较对象，涉及考试距离的模型采用默认阈值 $n=7$。将每节课的预测概率与刷卡出勤率相减，再将误差换算为百分点。MAE 为绝对误差的均值，RMSE 为平方误差均值的平方根。模型按 MAE 排序，两项均越低越好。
+表 1 和表 2 以同一批 18 节课为比较对象，涉及考试距离的模型采用默认阈值 `n=7`。将每节课的预测概率与刷卡出勤率相减，再将误差换算为百分点。MAE 为绝对误差的均值，RMSE 为平方误差均值的平方根。模型按 MAE 排序，两项均越低越好。
 
 ### 基线与单因素比较
 
@@ -117,7 +119,7 @@ $\bar d_n$ 由该阈值下窗口内的训练课计算。主实验采用 $n=7$，
 
 *图 2  双因素模型误差。点线为最优单因素，虚线为纯基线。来源：[figures/factor_pair_holdout_errors.png](../figures/factor_pair_holdout_errors.png)。*
 
-对考试距离另做扩展窗口测试。从第 5 周开始，仅用此前教学周训练并预测当周。合计 55 节课，默认阈值 $n=7$ 使 MAE 从 12.430 升到 12.866，RMSE 从 15.676 升到 15.880。同一窗口的常数修正也记录在结果表中，统一排名使用固定留出集。
+对考试距离另做扩展窗口测试。从第 5 周开始，仅用此前教学周训练并预测当周。合计 55 节课，默认阈值 `n=7` 使 MAE 从 12.430 升到 12.866，RMSE 从 15.676 升到 15.880。同一窗口的常数修正也记录在结果表中，统一排名使用固定留出集。
 
 ## 考试阈值敏感性
 
@@ -142,7 +144,7 @@ $\bar d_n$ 由该阈值下窗口内的训练课计算。主实验采用 $n=7$，
 
 *图 3  阈值敏感性。横虚线标出纯基线，竖点线标出默认阈值 n=7，空心圆标出各面板最低误差。*
 
-固定留出中，$n=10$ 的 MAE 最低，$n=4$ 的 RMSE 最低。$n=6$ 是唯一同时降低两项固定留出误差的阈值，但逐周测试的两项误差都比纯基线高。逐周测试中，启用考试修正的所有阈值都提高了 MAE。$n=8$ 的逐周 RMSE 虽低了约 0.028 个百分点，MAE 仍然上升。两种测试尚未显示出能稳定改善预测的考试阈值。
+固定留出中，`n=10` 的 MAE 最低，`n=4` 的 RMSE 最低。`n=6` 是唯一同时降低两项固定留出误差的阈值，但逐周测试的两项误差都比纯基线高。逐周测试中，启用考试修正的所有阈值都提高了 MAE。`n=8` 的逐周 RMSE 虽低了约 0.028 个百分点，MAE 仍然上升。两种测试尚未显示出能稳定改善预测的考试阈值。
 
 ## 代码实现与复现
 
@@ -169,7 +171,7 @@ python compare_factor_pairs.py
 python sweep_exam_thresholds.py
 ```
 
-figures/ 下的 [single_factor_scores.csv](../figures/single_factor_scores.csv)、[exam_distance_scores.csv](../figures/exam_distance_scores.csv) 和 [factor_pair_scores.csv](../figures/factor_pair_scores.csv) 对应主实验。[factor_model_weights.json](../figures/factor_model_weights.json) 保存主实验的 3 个基线参数、5 个单因素模型与 10 个组合的权重，以及中心化和参考项信息。阈值扫描产物为 [exam_threshold_scores.csv](../figures/exam_threshold_scores.csv) 和 [exam_threshold_errors.png](../figures/exam_threshold_errors.png)。合并特征表和主实验的权重仍采用默认阈值 $n=7$。
+figures/ 下的 [single_factor_scores.csv](../figures/single_factor_scores.csv)、[exam_distance_scores.csv](../figures/exam_distance_scores.csv) 和 [factor_pair_scores.csv](../figures/factor_pair_scores.csv) 对应主实验。[factor_model_weights.json](../figures/factor_model_weights.json) 保存主实验的 3 个基线参数、5 个单因素模型与 10 个组合的权重，以及中心化和参考项信息。阈值扫描产物为 [exam_threshold_scores.csv](../figures/exam_threshold_scores.csv) 和 [exam_threshold_errors.png](../figures/exam_threshold_errors.png)。合并特征表和主实验的权重仍采用默认阈值 `n=7`。
 
 逐节图为 [figures/single_factor_all_holdout_predictions.png](../figures/single_factor_all_holdout_predictions.png) 和 [figures/factor_pair_holdout_predictions.png](../figures/factor_pair_holdout_predictions.png)。黑点为实际出勤率，彩色折线依次连接离散课次的预测，灰色竖线为每节课的误差。
 

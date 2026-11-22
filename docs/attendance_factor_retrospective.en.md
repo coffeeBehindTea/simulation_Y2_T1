@@ -37,9 +37,9 @@ The 94 retained sessions run from 12 January to 26 March 2026. Weeks 1–8 suppl
 
 Both original weather scripts fit the same ODE first. Let t be the teaching week minus one. For each of the first eight weeks, pool recorded counts and eligible counts across courses. Fit the eight resulting proportions by bounded nonlinear least squares.
 
-$$
+```math
 \frac{dA}{dt}=-k(A-A_{\mathrm{eq}}),\qquad A(t)=A_{\mathrm{eq}}+(A_0-A_{\mathrm{eq}})e^{-kt}
-$$
+```
 
 Removing the two exam overlaps reduced the training set from 78 to 76 sessions. Refitting by the original method gives A₀ = 0.808843, Aeq = 0.282960 and k = 0.196729. Every factor model in the fixed split shares this curve.
 
@@ -47,31 +47,33 @@ Removing the two exam overlaps reduced the training set from 78 to 76 sessions. 
 
 For session i, use the log odds of A(tᵢ) as a fixed offset. S is the subset of factors and gⱼ is one factor adjustment. Fit the adjustments to the training attendance count aᵢ and eligible count Nᵢ by minimizing binomial negative log likelihood. The code clips the baseline to [10⁻⁶, 1−10⁻⁶] before taking its logit.
 
-$$
-\eta_i=\operatorname{logit}(A(t_i))+\sum_{j\in S}g_j(x_{ij}),\qquad p_i=\frac{1}{1+e^{-\eta_i}}
-$$
+```math
+\eta_i=\mathrm{logit}(A(t_i))+\sum_{j\in S}g_j(x_{ij}),\qquad p_i=\frac{1}{1+e^{-\eta_i}}
+```
 
-$$
+```math
 \mathcal L=\sum_{i\in\mathrm{train}}\bigl[N_i\log(1+e^{\eta_i})-a_i\eta_i\bigr]
-$$
+```
 
 The course term is βᵀCᵢ, where Cᵢ is a four-element one-hot vector. Time of day and sunny status each use two category offsets. Temperature uses a linear adjustment centered at the training mean of 6.7145 °C. Pairs add their two terms and re-estimate the weights jointly. When both factors span a constant, the second uses a zero reference coefficient and the first absorbs the shared intercept.
 
 ### Exam Countdown Across Courses
 
-DSA exams are on 29 January, 12 February, 5 March and 19 March. Math 2 exams are on 30 January, 13 February, 6 March and 27 March. All use a noon boundary. Count from the current session through the last retained session before the next scheduled exam, across courses. The last session before an exam is 1. Let $d$ be the remaining class count before applying the cutoff. A cutoff $n$ keeps countdowns satisfying $1\le d<n$ and sets both the feature and the exam adjustment to zero when $d\ge n$.
+DSA exams are on 29 January, 12 February, 5 March and 19 March. Math 2 exams are on 30 January, 13 February, 6 March and 27 March. All use a noon boundary. Count from the current session through the last retained session before the next scheduled exam, across courses. The last session before an exam is 1. Let `d` be the remaining class count before applying the cutoff. A cutoff `n` keeps countdowns satisfying 1 ≤ d ≤ n−1 and sets both the feature and the exam adjustment to zero when d ≥ n.
 
-$$
-g_{\mathrm{exam},n}(d)=\mathbf 1_{\{1\le d<n\}}\bigl[\alpha_n+\beta_n(d-\bar d_n)\bigr]
-$$
+```math
+g_{\mathrm{exam},n}(d)=I_n(d)\left[\alpha_n+\beta_n(d-\bar{d}_n)\right]
+```
 
-The mean $\bar d_n$ uses training sessions inside that cutoff's window. The main experiment uses $n=7$, which gives 36 rows from 1 to 6 and 58 zeros. The exam-only adjustment uses the 24 training sessions inside that window, with $\bar d_7=3$. Pairs fit jointly on all 76 training sessions. Outside the window the exam term is zero and the other factor still applies.
+Here Iₙ(d) is 1 when 1 ≤ d ≤ n−1 and 0 otherwise.
 
-The cutoff sweep tests exam distance alone. It refits the adjustment separately for each $n$ and training window while using the same shared ODE for a given split. At $n=1$, no sessions activate the exam term, so predictions come directly from the pure baseline. At $n=2$, only sessions with $d=1$ are in the window. The model fits a constant adjustment and sets the slope to zero.
+The mean d̄ₙ uses training sessions inside that cutoff's window. The main experiment uses `n=7`, which gives 36 rows from 1 to 6 and 58 zeros. The exam-only adjustment uses the 24 training sessions inside that window, with d̄₇ = 3. Pairs fit jointly on all 76 training sessions. Outside the window the exam term is zero and the other factor still applies.
+
+The cutoff sweep tests exam distance alone. It refits the adjustment separately for each `n` and training window while using the same shared ODE for a given split. At `n=1`, no sessions activate the exam term, so predictions come directly from the pure baseline. At `n=2`, only sessions with `d=1` are in the window. The model fits a constant adjustment and sets the slope to zero.
 
 ## Fixed Holdout Results
 
-Tables 1 and 2 use the same 18 sessions. Models that include exam distance use the default cutoff $n=7$. Compare each predicted probability with the observed attendance rate and express the error in percentage points. MAE is the mean absolute error. RMSE is the square root of the mean squared error. Rankings use MAE, and lower is better for both.
+Tables 1 and 2 use the same 18 sessions. Models that include exam distance use the default cutoff `n=7`. Compare each predicted probability with the observed attendance rate and express the error in percentage points. MAE is the mean absolute error. RMSE is the square root of the mean squared error. Rankings use MAE, and lower is better for both.
 
 ### Baseline and Single Factors
 
@@ -117,7 +119,7 @@ Figure 1 shows the original four single factors against the pure baseline. The e
 
 *Figure 2. Pair errors. Dots mark the best single factor and dashes mark the pure baseline. Source: [figures/factor_pair_holdout_errors.png](../figures/factor_pair_holdout_errors.png).*
 
-The exam check uses an expanding window starting in Week 5, with each week predicted from earlier weeks only. Across 55 sessions, adding exam distance at the default cutoff $n=7$ raises MAE from 12.430 to 12.866 and RMSE from 15.676 to 15.880. The results CSV also reports a constant adjustment for the same window. The common ranking uses the fixed holdout.
+The exam check uses an expanding window starting in Week 5, with each week predicted from earlier weeks only. Across 55 sessions, adding exam distance at the default cutoff `n=7` raises MAE from 12.430 to 12.866 and RMSE from 15.676 to 15.880. The results CSV also reports a constant adjustment for the same window. The common ranking uses the fixed holdout.
 
 ## Exam Cutoff Sensitivity
 
@@ -142,7 +144,7 @@ Table 3 compares ten cutoffs. The fixed holdout contains 18 sessions from Weeks 
 
 *Figure 3. Cutoff sensitivity. The horizontal dashed line marks the pure baseline, the vertical dotted line marks the default n=7, and the open circle marks the lowest error in each panel.*
 
-On the fixed holdout, $n=10$ has the lowest MAE and $n=4$ has the lowest RMSE. Only $n=6$ improves both holdout metrics over the pure baseline, and both metrics then worsen in the rolling test. Every cutoff that activates the exam adjustment raises rolling MAE. At $n=8$, rolling RMSE is about 0.028 percentage points lower, while MAE rises. The two tests provide no consistent improvement from an exam cutoff.
+On the fixed holdout, `n=10` has the lowest MAE and `n=4` has the lowest RMSE. Only `n=6` improves both holdout metrics over the pure baseline, and both metrics then worsen in the rolling test. Every cutoff that activates the exam adjustment raises rolling MAE. At `n=8`, rolling RMSE is about 0.028 percentage points lower, while MAE rises. The two tests provide no consistent improvement from an exam cutoff.
 
 ## Implementation and Reproduction
 
@@ -169,7 +171,7 @@ python compare_factor_pairs.py
 python sweep_exam_thresholds.py
 ```
 
-In figures/, [single_factor_scores.csv](../figures/single_factor_scores.csv), [exam_distance_scores.csv](../figures/exam_distance_scores.csv) and [factor_pair_scores.csv](../figures/factor_pair_scores.csv) cover the main experiment. [factor_model_weights.json](../figures/factor_model_weights.json) stores its three baseline parameters, weights for five single factors and ten pairs, and the centering and reference conventions. The cutoff sweep writes [exam_threshold_scores.csv](../figures/exam_threshold_scores.csv) and [exam_threshold_errors.png](../figures/exam_threshold_errors.png). The combined feature table and main experiment weights use the default cutoff $n=7$.
+In figures/, [single_factor_scores.csv](../figures/single_factor_scores.csv), [exam_distance_scores.csv](../figures/exam_distance_scores.csv) and [factor_pair_scores.csv](../figures/factor_pair_scores.csv) cover the main experiment. [factor_model_weights.json](../figures/factor_model_weights.json) stores its three baseline parameters, weights for five single factors and ten pairs, and the centering and reference conventions. The cutoff sweep writes [exam_threshold_scores.csv](../figures/exam_threshold_scores.csv) and [exam_threshold_errors.png](../figures/exam_threshold_errors.png). The combined feature table and main experiment weights use the default cutoff `n=7`.
 
 The session plots are [figures/single_factor_all_holdout_predictions.png](../figures/single_factor_all_holdout_predictions.png) and [figures/factor_pair_holdout_predictions.png](../figures/factor_pair_holdout_predictions.png). Black points show observations, colored lines join successive session predictions, and gray vertical segments indicate individual errors.
 
