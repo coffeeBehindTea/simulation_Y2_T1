@@ -1,0 +1,205 @@
+{
+  "training_weeks": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "training_sessions": 76,
+  "exam_window_training_sessions": 24,
+  "holdout_weeks": [
+    9,
+    10
+  ],
+  "holdout_sessions": 18,
+  "baseline": {
+    "equation": "A(t) = A_eq + (A0 - A_eq) * exp(-k*t), t = teaching_week - 1",
+    "A0": 0.8088429187147077,
+    "A_eq": 0.28295956598403665,
+    "k": 0.1967289080518235
+  },
+  "prediction": "sigmoid(logit(clamp(A(t), 0.000001, 0.999999)) + sum of factor adjustments)",
+  "factor_definitions": {
+    "Course": {
+      "adjustment": "Use the coefficient for the active course.",
+      "one_hot_order": [
+        "COMP0206",
+        "COMP0207",
+        "COMP0208",
+        "COMP0209"
+      ]
+    },
+    "Time of day": {
+      "adjustment": "Use the coefficient for morning or afternoon.",
+      "afternoon_starts_at": "12:00"
+    },
+    "Sunny": {
+      "adjustment": "Use the coefficient for sunny or not_sunny.",
+      "sunny_weather_codes": [
+        0,
+        1
+      ]
+    },
+    "Feels-like temperature": {
+      "adjustment": "offset_at_training_mean + per_degree_c * (temperature_c - training_mean_c)",
+      "training_mean_c": 6.7144736842105255
+    },
+    "Exam distance": {
+      "adjustment": "offset_at_training_mean + per_remaining_class * (remaining_classes - training_mean_remaining_classes) inside the exam window; zero otherwise",
+      "active_remaining_classes": [
+        1,
+        6
+      ],
+      "training_mean_remaining_classes": 3.0
+    }
+  },
+  "pair_coding": "When the second factor also spans a constant, its reference coefficient is set to zero and the common intercept is represented by the first factor.",
+  "single_factor_weights": {
+    "Course": {
+      "Course": {
+        "COMP0206": -0.7445129656010308,
+        "COMP0207": 0.4011443875434529,
+        "COMP0208": -0.2094708864827678,
+        "COMP0209": 0.2834455003851002
+      }
+    },
+    "Time of day": {
+      "Time of day": {
+        "morning": -0.24746535493741773,
+        "afternoon": 0.18029834368947784
+      }
+    },
+    "Sunny": {
+      "Sunny": {
+        "not_sunny": -0.04315865784215884,
+        "sunny": 0.15877385529254046
+      }
+    },
+    "Feels-like temperature": {
+      "Feels-like temperature": {
+        "offset_at_training_mean": -0.00590927660289632,
+        "per_degree_c": 0.027769200183143664
+      }
+    },
+    "Exam distance": {
+      "Exam distance": {
+        "offset_at_training_mean": 0.11321808286928896,
+        "per_remaining_class": 0.1551805640699206
+      }
+    }
+  },
+  "two_factor_weights": {
+    "Course + Time of day": {
+      "Course": {
+        "COMP0206": -0.7683327685864756,
+        "COMP0207": 0.3301714503163321,
+        "COMP0208": -0.2331080854048833,
+        "COMP0209": 0.2481058072624533
+      },
+      "Time of day": {
+        "morning": 0.0,
+        "afternoon": 0.0709729402040013
+      }
+    },
+    "Course + Sunny": {
+      "Course": {
+        "COMP0206": -0.7581895729161339,
+        "COMP0207": 0.3872436707627195,
+        "COMP0208": -0.2115617993254295,
+        "COMP0209": 0.2639453237153018
+      },
+      "Sunny": {
+        "not_sunny": 0.0,
+        "sunny": 0.0530233769417125
+      }
+    },
+    "Course + Feels-like temperature": {
+      "Course": {
+        "COMP0206": -0.7416651731453071,
+        "COMP0207": 0.3986985947219761,
+        "COMP0208": -0.20918176836046998,
+        "COMP0209": 0.28272215349881274
+      },
+      "Feels-like temperature": {
+        "offset_at_training_mean": 0.0,
+        "per_degree_c": 0.0022660059883564
+      }
+    },
+    "Course + Exam distance": {
+      "Course": {
+        "COMP0206": -0.682124432938427,
+        "COMP0207": 0.38579438430357715,
+        "COMP0208": -0.28399900586345717,
+        "COMP0209": 0.29319282839290495
+      },
+      "Exam distance": {
+        "offset_at_training_mean": 0.053409295187628616,
+        "per_remaining_class": 0.15384942207119626
+      }
+    },
+    "Time of day + Sunny": {
+      "Time of day": {
+        "morning": -0.28987737428526955,
+        "afternoon": 0.13966025182117775
+      },
+      "Sunny": {
+        "not_sunny": 0.0,
+        "sunny": 0.20521035901625742
+      }
+    },
+    "Time of day + Feels-like temperature": {
+      "Time of day": {
+        "morning": -0.23602948332907284,
+        "afternoon": 0.16895242805544494
+      },
+      "Feels-like temperature": {
+        "offset_at_training_mean": 0.0,
+        "per_degree_c": 0.014441054062004821
+      }
+    },
+    "Time of day + Exam distance": {
+      "Time of day": {
+        "morning": -0.27596482794356425,
+        "afternoon": 0.11995543249180671
+      },
+      "Exam distance": {
+        "offset_at_training_mean": 0.14320932903240854,
+        "per_remaining_class": 0.1397018346958618
+      }
+    },
+    "Sunny + Feels-like temperature": {
+      "Sunny": {
+        "not_sunny": -0.03949454214714977,
+        "sunny": 0.1296138956907223
+      },
+      "Feels-like temperature": {
+        "offset_at_training_mean": 0.0,
+        "per_degree_c": 0.02477486538044628
+      }
+    },
+    "Sunny + Exam distance": {
+      "Sunny": {
+        "not_sunny": -0.13231112979345216,
+        "sunny": 0.17709467275603405
+      },
+      "Exam distance": {
+        "offset_at_training_mean": 0.2072511179191231,
+        "per_remaining_class": 0.17691525521887705
+      }
+    },
+    "Feels-like temperature + Exam distance": {
+      "Feels-like temperature": {
+        "offset_at_training_mean": -0.0568439597418011,
+        "per_degree_c": 0.02551707273003941
+      },
+      "Exam distance": {
+        "offset_at_training_mean": 0.15636922635542663,
+        "per_remaining_class": 0.15322198060955627
+      }
+    }
+  }
+}

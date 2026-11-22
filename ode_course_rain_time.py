@@ -18,10 +18,12 @@ import matplotlib.dates as mdates
 from scipy.optimize import curve_fit, minimize
 from scipy.special import expit, logit
 
+# Resolve the input file and this variant's results folder relative to the script.
 HERE = Path(__file__).resolve().parent
 INPUT_CSV = HERE / "RAI_attendance_with_weather.csv"
 OUTPUT_DIR = HERE / "ODE_Rain_Results"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+# The mode selects the threshold rule. The display name is used in reports.
 WEATHER_MODE = "rain"
 WEATHER_NAME = "Rain"
 RAIN_THRESHOLD = 1.0       # mm; adverse if rain > 1.0 mm in the matched hour
@@ -30,10 +32,13 @@ CUTOFF_HOUR = 12          # 12:00 and later => afternoon
 
 
 def ode_model(t, A0, A_eq, k):
+    """Return attendance at week offsets t with initial rate A0, equilibrium A_eq, and decay k."""
     return A_eq + (A0 - A_eq) * np.exp(-k * t)
 
 
 def errors(actual, predicted):
+    """Return unweighted MAE and RMSE for aligned observed and predicted proportions."""
+    # Convert both series to numeric arrays for elementwise comparison.
     actual = np.asarray(actual, dtype=float)
     predicted = np.asarray(predicted, dtype=float)
     return (float(np.mean(np.abs(actual - predicted))),
@@ -43,15 +48,19 @@ def errors(actual, predicted):
 def fit_model(train_df, factors, A0, A_eq, k, course_names):
     """Jointly fit the course log-odds offsets and listed binary factors.
 
-    Each model is optimized from fresh initial values, never inherits the fit
-    of a different weather model. The fixed ODE parameters are shared.
+    Use session counts from train_df, ODE parameters A0, A_eq, and k, and the
+    stable ordering in course_names. Return two dictionaries keyed by course
+    and factor name. Each variant starts its optimizer at zero.
     """
+    # Give each session its teaching week's fitted baseline before applying any factors.
     base = ode_model(train_df["Teaching Week Number"].to_numpy() - 1,
                      A0, A_eq, k)
     base_z = logit(np.clip(base, 1e-6, 1 - 1e-6))
+    # Course codes index the first block of coefficients in the optimizer vector.
     codes = pd.Categorical(train_df["Module"], categories=course_names).codes
     if (codes < 0).any():
         raise ValueError("Unknown course name in training data")
+    # X contains the requested factors. y and n are attended and eligible counts.
     X = (np.column_stack([train_df[f].to_numpy(dtype=float) for f in factors])
          if factors else np.empty((len(train_df), 0)))
     y = train_df["Attended"].to_numpy(dtype=float)
@@ -59,12 +68,15 @@ def fit_model(train_df, factors, A0, A_eq, k, course_names):
     n_courses = len(course_names)
 
     def negative_log_likelihood(theta):
+        """Evaluate binomial loss at theta, ordered as course weights then factor weights."""
+        # z contains adjusted log odds and p is clipped to keep logarithms finite.
         z = base_z + theta[:n_courses][codes]
         if factors:
             z += X @ theta[n_courses:]
         p = np.clip(expit(z), 1e-9, 1 - 1e-9)
         return -float(np.sum(y * np.log(p) + (n - y) * np.log(1 - p)))
 
+    # Fit all requested adjustments together while the ODE baseline stays fixed.
     result = minimize(negative_log_likelihood,
                       x0=np.zeros(n_courses + len(factors)),
                       method="L-BFGS-B")
@@ -75,9 +87,12 @@ def fit_model(train_df, factors, A0, A_eq, k, course_names):
 
 
 def predict(df, A0, A_eq, k, course_offsets=None, factor_offsets=None):
+    """Predict probabilities for df using the ODE parameters and optional offset mappings."""
+    # p0 is the shared weekly baseline for each session's teaching week.
     p0 = ode_model(df["Teaching Week Number"].to_numpy() - 1, A0, A_eq, k)
     if course_offsets is None:
         return p0
+    # Look up the per-course shift before adding the named feature weights beta.
     course_values = df["Module"].map(course_offsets)
     if course_values.isna().any():
         raise ValueError("Unknown course in predictions")
@@ -88,17 +103,23 @@ def predict(df, A0, A_eq, k, course_offsets=None, factor_offsets=None):
 
 
 def plot_per_session(df, predicted_col, title, filename, course_names):
-    """One subplot/course. Every lesson is a separate marker and model point."""
+    """Save predicted_col against observed rates in df, with one panel per named course.
+
+    Use title for the figure heading and filename for its PNG destination.
+    """
+    # Use common y limits across courses and sort each panel by actual class start.
     fig, axes = plt.subplots(2, 2, figsize=(15, 9), sharey=True)
     for ax, name in zip(axes.flat, course_names):
         part = df.loc[df["Module"] == name].sort_values(
             ["session_time", "Class Id"] if "Class Id" in df else ["session_time"])
+        # Use the timestamp of each retained class as the horizontal coordinate.
         dates = part["session_time"]
         ax.scatter(dates, part["actual_rate"], s=28, color="black",
                    alpha=.75, marker="o", label="Observed (each session)", zorder=3)
         # Line is a sequence of session predictions, not a weekly average.
         ax.plot(dates, part[predicted_col], "-o", linewidth=1.45,
                 markersize=3.6, color="#2779B3", label="Predicted (each session)")
+        # Mark the chronological start of the holdout on every course panel.
         first_test = df.loc[df["Teaching Week Number"] > 8, "session_time"].min()
         if pd.notna(first_test):
             ax.axvline(first_test, ls="--", color="#BD6F35", lw=1,
@@ -119,17 +140,21 @@ def plot_per_session(df, predicted_col, title, filename, course_names):
 
 
 def main():
+    """Fit the configured weather variants and export per-session predictions and holdout errors."""
     if not INPUT_CSV.exists():
         raise FileNotFoundError(
             f"Missing {INPUT_CSV.name}. Put this script next to that CSV."
         )
+    # Each source row represents a session with recorded counts and matched weather.
     df = pd.read_csv(INPUT_CSV)
     mandatory = {"Date String", "Start Time", "Module", "Teaching Week Number",
                  "Attended", "Total", "rain", "wind_kmh"}
+    # Stop before fitting if the input omits any required source columns.
     absent = mandatory - set(df.columns)
     if absent:
         raise ValueError(f"Required CSV columns missing: {sorted(absent)}")
 
+    # Normalize local start times and coerce the numeric fit inputs before validation.
     df["session_time"] = pd.to_datetime(
         df["Date String"].astype(str) + " " + df["Start Time"].astype(str),
         errors="raise"
@@ -142,9 +167,11 @@ def main():
         raise ValueError("Invalid attendance counts")
     if df[["rain", "wind_kmh"]].isna().any().any():
         raise ValueError("Missing rain or wind: do not silently call unknown weather normal")
+    # Define the target proportion and the binary time-of-day predictor.
     df["actual_rate"] = df["Attended"] / df["Total"]
     df["Afternoon"] = (df["session_time"].dt.hour >= CUTOFF_HOUR).astype(int)
 
+    # Weather is a binary predictor derived from this variant's selected rule.
     if WEATHER_MODE == "rain":
         df["Weather"] = (df["rain"] > 0).astype(int)
         weather_definition = "Rain = 1 when rain > 0 mm in the matched start-hour"
@@ -155,11 +182,13 @@ def main():
             "Adverse = 1 when rain > 1 mm OR wind > 20 km/h; "
             "cloud/overcast alone is NOT adverse")
 
+    # Sort for plotting and reserve later weeks for holdout evaluation.
     df = df.sort_values(["session_time", "Module"]).reset_index(drop=True)
     train = df[df["Teaching Week Number"] <= 8].copy()
     test = df[df["Teaching Week Number"] > 8].copy()
     if train.empty or test.empty:
         raise ValueError("Both Weeks 1-8 and Weeks 9-10 must be present")
+    # Use the same stable course ordering in plots and coefficient lookups.
     course_names = sorted(df["Module"].unique().tolist())
     print(f"\n=== {WEATHER_NAME} model ===")
     print(f"Rows: {len(df)} (train={len(train)}, test={len(test)})")
@@ -175,6 +204,7 @@ def main():
     weekly_train = train.groupby("Teaching Week Number").agg(
         attended=("Attended", "sum"), total=("Total", "sum"))
     weekly_train["rate"] = weekly_train["attended"] / weekly_train["total"]
+    # Keep the fitted initial rate, equilibrium, and decay. Discard the covariance.
     ode_params, _ = curve_fit(
         ode_model, weekly_train.index.to_numpy() - 1,
         weekly_train["rate"].to_numpy(),
@@ -201,6 +231,7 @@ def main():
     df["Pred_Full"] = predict(
         df, A0, A_eq, k, full_course_betas, full_extra)
 
+    # Each tuple names the model, its prediction column, and its plot file.
     variants = [
         ("Base ODE", "Pred_Base_ODE", "01_ODE_4_Courses.png"),
         ("ODE + Course", "Pred_Course", "02_ODE_Plus_Course_4_Courses.png"),
@@ -211,6 +242,7 @@ def main():
         ("ODE + Course + " + WEATHER_NAME + " + Afternoon",
          "Pred_Full", "05_Full_Model_4_Courses.png"),
     ]
+    # report collects one MAE and RMSE row per variant on the same holdout classes.
     report = []
     held_out = df["Teaching Week Number"] > 8
     for title, col, filename in variants:
@@ -219,12 +251,14 @@ def main():
                            df.loc[held_out, col])
         report.append({"Model": title, "MAE": mae, "RMSE": rmse})
 
+    # Export the aggregate holdout scores and the full chronological session table.
     scores = pd.DataFrame(report)
     scores.to_csv(OUTPUT_DIR / "model_comparison.csv", index=False)
     df.to_csv(OUTPUT_DIR / "per_session_predictions.csv", index=False)
 
     # Compact comparison chart: errors calculated on individual Week 9-10 lessons.
     fig, ax = plt.subplots(figsize=(11.5, 5))
+    # Center a pair of adjacent metric bars around each model's y coordinate.
     y = np.arange(len(scores))
     bar_width = .34
     ax.barh(y - bar_width/2, scores["MAE"], bar_width, label="MAE")
